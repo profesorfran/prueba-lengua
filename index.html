@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Procesador de Texto Seguro</title>
+  <!-- Modern Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-color: #f3f4f6;
+      --card-bg: #ffffff;
+      --text-color: #1f2937;
+      --border-color: #e5e7eb;
+      --danger-color: #ef4444;
+      --success-color: #10b981;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 800px;
+      padding: 40px;
+      box-sizing: border-box;
+      margin: 20px;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+      color: #111827;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .autor {
+      font-size: 13px;
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    .warning-box {
+      background-color: #fef2f2;
+      border: 1px solid #fee2e2;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 24px;
+      text-align: center;
+      color: #991b1b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .input-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      font-family: inherit;
+    }
+
+    @media (max-width: 600px) {
+      .input-group {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    textarea {
+      height: 400px;
+      resize: vertical;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      margin-bottom: 24px;
+    }
+
+    #contador {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .mensaje {
+      text-align: center;
+      margin-top: 16px;
+      font-weight: 500;
+      min-height: 24px;
+    }
+
+    .admin-link {
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      font-size: 12px;
+      color: #d1d5db;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .admin-link:hover {
+      color: #9ca3af;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-color);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>Procesador de Texto</h2>
+    <div class="autor">Desarrollado por Francisco David Sánchez Valencia</div>
+
+    <div class="warning-box">
+      ⚠️ ¡ATENCIÓN! No se permite copiar, pegar ni salir de la aplicación. Si cambias de pestaña o minimizas, el texto
+      se borrará.
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="nombre" placeholder="Nombre" autocomplete="off" spellcheck="false" onpaste="return false;"
+        oncopy="return false;" oncut="return false;" oncontextmenu="return false;">
+      <input type="text" id="apellidos" placeholder="Apellidos" autocomplete="off" spellcheck="false"
+        onpaste="return false;" oncopy="return false;" oncut="return false;" oncontextmenu="return false;">
+      <input type="text" id="curso" placeholder="Curso" autocomplete="off" spellcheck="false" onpaste="return false;"
+        oncopy="return false;" oncut="return false;" oncontextmenu="return false;">
+    </div>
+
+    <textarea id="texto" placeholder="Comienza a escribir aquí…" autocomplete="off" spellcheck="false"
+      onpaste="return false;" oncopy="return false;" oncut="return false;" oncontextmenu="return false;"></textarea>
+
+    <div class="footer-bar">
+      <div id="contador">0 palabras</div>
+    </div>
+
+    <button class="btn-primary" onclick="enviarTexto()">Enviar Ejercicio</button>
+    <div class="mensaje" id="mensaje"></div>
+
+    <!-- Admin Trigger -->
+    <a class="admin-link" onclick="abrirAdmin()">Opciones de Desarrollador</a>
+  </div>
+
+  <!-- Developer Modal -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-content">
+      <div class="modal-header">Modo Desarrollador</div>
+
+      <div id="loginSection">
+        <p style="margin-bottom: 10px; font-size: 14px; color: #666;">Introduce la clave de acceso:</p>
+        <input type="password" id="adminPassword" placeholder="Clave de acceso" style="margin-bottom: 10px;">
+        <button class="btn-primary" onclick="verificarPassword()">Acceder</button>
+        <p id="adminError" style="color: red; font-size: 13px; margin-top: 8px; display: none;">Clave incorrecta</p>
+      </div>
+
+      <div id="uploadSection" style="display: none;">
+        <p style="margin-bottom: 10px; font-size: 14px; color: #666;">Pega el texto para que el alumno lo corrija:</p>
+        <textarea id="textoInyectar" style="height: 150px; resize: none;" placeholder="Texto base..."></textarea>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="cerrarAdmin()">Cancelar</button>
+          <button class="btn-primary" onclick="inyectarTexto()" style="width: auto;">Guardar y Publicar</button>
+        </div>
+      </div>
+
+      <div id="closeOnly" class="modal-actions" style="display:none; margin-top: 0;">
+        <button class="btn-secondary" onclick="cerrarAdmin()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const textarea = document.getElementById("texto");
+    const contador = document.getElementById("contador");
+    const mensaje = document.getElementById("mensaje");
+    // URL del Google Apps Script (Debe ser el mismo que usas para enviar)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5X5aRSUuVakq3_jAf76SHUx4LQYzw9Lp-VE8oE0pFGmrGbAGrlD0vaJFpq5kEBvaj/exec";
+
+    // --- Cargar Texto desde la Nube al Iniciar ---
+    window.onload = function () {
+      fetchTextFromCloud();
+    };
+
+    function fetchTextFromCloud() {
+      textarea.placeholder = "Cargando ejercicio...";
+      textarea.disabled = true;
+
+      fetch(SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+          if (data.texto) {
+            textarea.value = data.texto;
+            textarea.dispatchEvent(new Event('input')); // Actualizar contador
+          }
+        })
+        .catch(error => {
+          console.error("Error cargando texto:", error);
+          textarea.placeholder = "Error al cargar el ejercicio. Intenta recargar la página.";
+        })
+        .finally(() => {
+          textarea.disabled = false;
+          // Si no habia texto, restaurar placeholder
+          if (!textarea.value) textarea.placeholder = "Comienza a escribir aquí…";
+        });
+    }
+
+    // --- Lógica del Contador ---
+    textarea.addEventListener("input", () => {
+      const palabras = textarea.value.trim().split(/\s+/).filter(p => p.length > 0);
+      contador.innerText = palabras.length + " palabras";
+    });
+
+    // --- Bloqueos Anti-Trampas ---
+    textarea.addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && ['v', 'c', 'x', 'a'].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+    });
+
+    const wipe = () => {
+      textarea.value = "";
+      contador.innerText = "0 palabras";
+      // Si se borra por seguridad, intentamos recargar el texto base para que el alumno no pierda el enunciado
+      // Opcional: Si prefieres que se borre TOTALMENTE (castigo), comenta la siguiente linea:
+      // fetchTextFromCloud(); 
+    };
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") wipe();
+    }, { capture: true });
+
+    document.addEventListener("webkitvisibilitychange", () => {
+      const st = document.webkitVisibilityState || document.visibilityState;
+      if (st === "hidden") wipe();
+    }, { capture: true });
+
+    window.addEventListener("pagehide", wipe, { capture: true });
+    window.addEventListener("beforeunload", wipe);
+    document.addEventListener("freeze", wipe, { capture: true });
+
+    // --- Envío de Formulario ---
+    function enviarTexto() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const apellidos = document.getElementById("apellidos").value.trim();
+      const curso = document.getElementById("curso").value.trim();
+      const texto = textarea.value.trim();
+
+      if (!nombre || !apellidos || !curso || !texto) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
+
+      mensaje.style.color = "#6b7280";
+      mensaje.innerText = "Enviando...";
+
+      const params = new URLSearchParams();
+      params.append("nombre", nombre);
+      params.append("apellidos", apellidos);
+      params.append("curso", curso);
+      params.append("texto", texto);
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString()
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.driveStatus && data.driveStatus !== "OK") {
+            alert("⚠️ Se guardó en el Excel, pero FALLÓ Drive:\n" + data.driveStatus);
+          } else {
+            mensaje.style.color = "var(--success-color)";
+            mensaje.innerText = "✅ Texto enviado correctamente.";
+          }
+          limpiarTodo();
+          setTimeout(fetchTextFromCloud, 2000);
+        })
+        .catch((error) => {
+          console.error(error);
+          // Fallback porsiacaso la respuesta no es JSON válido
+          mensaje.style.color = "var(--success-color)";
+          mensaje.innerText = "✅ Texto enviado (revisa Drive).";
+          limpiarTodo();
+          setTimeout(fetchTextFromCloud, 2000);
+        });
+    }
+
+    function limpiarTodo() {
+      document.getElementById("nombre").value = "";
+      document.getElementById("apellidos").value = "";
+      document.getElementById("curso").value = "";
+      textarea.value = "";
+      contador.innerText = "0 palabras";
+    }
+
+    // --- Developer Mode Logic ---
+    const modal = document.getElementById('adminModal');
+    const loginSection = document.getElementById('loginSection');
+    const uploadSection = document.getElementById('uploadSection');
+    const adminError = document.getElementById('adminError');
+    const ADMIN_PASS = "admin123";
+
+    function abrirAdmin() {
+      modal.classList.add('active');
+      loginSection.style.display = 'block';
+      uploadSection.style.display = 'none';
+      document.getElementById('closeOnly').style.display = 'block';
+      document.getElementById('adminPassword').value = '';
+      adminError.style.display = 'none';
+    }
+
+    function cerrarAdmin() {
+      modal.classList.remove('active');
+    }
+
+    function verificarPassword() {
+      const input = document.getElementById('adminPassword').value;
+      if (input === ADMIN_PASS) {
+        loginSection.style.display = 'none';
+        document.getElementById('closeOnly').style.display = 'none';
+        uploadSection.style.display = 'block';
+      } else {
+        adminError.style.display = 'block';
+      }
+    }
+
+    function inyectarTexto() {
+      // AHORA: Guardar en la Nube
+      const textoBase = document.getElementById('textoInyectar').value;
+
+      if (!textoBase) return;
+
+      const btn = document.querySelector('#uploadSection .btn-primary');
+      const originalText = btn.innerText;
+      btn.innerText = "Guardando...";
+      btn.disabled = true;
+
+      const params = new URLSearchParams();
+      params.append("action", "save_config");
+      params.append("textoDelEjercicio", textoBase);
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString()
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.result === "success") {
+            alert("Texto guardado y publicado para todos los alumnos.");
+            // Actualizar vista local también
+            textarea.value = textoBase;
+            textarea.dispatchEvent(new Event('input'));
+            cerrarAdmin();
+            document.getElementById('textoInyectar').value = '';
+          } else {
+            alert("Error al guardar.");
+          }
+        })
+        .catch(err => {
+          // Fallback para CORS opaco si no devuelve JSON
+          alert("Texto publicado (consulte la hoja para verificar).");
+          textarea.value = textoBase;
+          textarea.dispatchEvent(new Event('input'));
+          cerrarAdmin();
+        })
+        .finally(() => {
+          btn.innerText = originalText;
+          btn.disabled = false;
+        });
+    }
+
+    document.getElementById('adminPassword').addEventListener('keyup', function (e) {
+      if (e.key === 'Enter') verificarPassword();
+    });
+
+  </script>
+</body>
+
+</html>
